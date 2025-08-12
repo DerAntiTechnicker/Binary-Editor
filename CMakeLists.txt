@@ -8,4 +8,6 @@ include_directories(.)
 add_executable(Binary_Editor
         datei.cpp
         datei.h
-        main.cpp)
+        main.cpp
+        CommandLine.cpp
+        CommandLine.h)

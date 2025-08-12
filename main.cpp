@@ -8,24 +8,31 @@
  ***************************************************/
 
 #include "datei.h"
+#include "CommandLine.h"
 
+#include <conio.h>
+
+void CommandLine::CommandActions() {     // later it should be only a prototype!
+        if (input == commands[i]) {     // exit
+            running = false;
+        }
+}
 
 int main() {
-    // datei test ("C:/Users/Florian Schneck/ClionProjects/Binary-Editor/Test.bin");
-     datei test;
-
-     test.setPath("C:/Users/Florian Schneck/ClionProjects/Binary-Editor/Test.bin");
-     PrintError(test.setBlockSize(4));
-     PrintError(test.setBytesPerCycle(404));
-     PrintError(test.setColumns(8));
-     PrintError(test.setDigits(4));
-     PrintError(test.read());
+    CommandLine cmdLine;
+    cmdLine.init();
+    getch();
+    return 0;
+}
 
 
-    /*std::fstream file("C:/Users/Florian Schneck/ClionProjects/Binary-Editor/Test.bin", std::ios::out | std::ios::trunc | std::ios::binary);
+
+
+
+
+
+/*std::fstream file("C:/Users/Florian Schneck/ClionProjects/Binary-Editor/Test.bin", std::ios::out | std::ios::trunc | std::ios::binary);
     int text[1000];
     for (int i = 0; i < 50; i++) text[i] = 24;
     for (int i = 50; i < 100; i++) text[i] = 1024;
     file.write(reinterpret_cast<char*>(text), sizeof(int) * 100);*/
-    return 0;
-}
