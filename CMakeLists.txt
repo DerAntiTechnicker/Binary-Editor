@@ -9,5 +9,4 @@ add_executable(Binary_Editor
         datei.cpp
         datei.h
         main.cpp
-        CommandLine.cpp
-        CommandLine.h)
+)

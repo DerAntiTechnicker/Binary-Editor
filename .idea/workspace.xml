@@ -5,7 +5,7 @@
   </component>
   <component name="BackendCodeEditorMiscSettings">
     <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
-    <option name="/Default/Housekeeping/LiveTemplatesHousekeeping/HotspotSessionHintIsShown/@EntryValue" value="true" type="bool" />
+    <option name="/Default/Housekeeping/GlobalSettingsUpgraded/IsUpgraded/@EntryValue" value="true" type="bool" />
   </component>
   <component name="CMakePresetLoader">{
   &quot;useNewFormat&quot;: true
@@ -28,12 +28,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="965deeb9-15b7-4abd-b953-883148e61f54" name="Changes" comment="Add Class &quot;datei&quot;">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CommandLine.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CommandLine.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/editor.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CommandLine.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CommandLine.h" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -110,12 +108,12 @@
   }
 }</component>
   <component name="RunManager">
-    <configuration name="Binary_Editor" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="Binary_Editor.exe" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="true" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Binary_Editor" TARGET_NAME="Binary_Editor" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Binary_Editor" RUN_TARGET_NAME="Binary_Editor">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+    <configuration name="Binary_Editor" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="Binary_Editor.exe" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="true" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Binary_Editor" TARGET_NAME="Binary_Editor" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Binary_Editor" RUN_TARGET_NAME="Binary_Editor">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -132,6 +130,9 @@
       <workItem from="1755007420810" duration="228000" />
       <workItem from="1755010742819" duration="476000" />
       <workItem from="1755013988640" duration="1168000" />
+      <workItem from="1755089311518" duration="3874000" />
+      <workItem from="1755099467211" duration="12000" />
+      <workItem from="1755100715234" duration="51000" />
     </task>
     <task id="LOCAL-00001" summary="Add Class &quot;datei&quot;">
       <option name="closed" value="true" />
