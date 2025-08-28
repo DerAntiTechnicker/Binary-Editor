@@ -6,6 +6,9 @@
   <component name="BackendCodeEditorMiscSettings">
     <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
     <option name="/Default/Housekeeping/GlobalSettingsUpgraded/IsUpgraded/@EntryValue" value="true" type="bool" />
+    <option name="/Default/Housekeeping/LiveTemplatesHousekeeping/HotspotSessionHintIsShown/@EntryValue" value="true" type="bool" />
+    <option name="/Default/Housekeeping/OptionsDialog/SelectedPageId/@EntryValue" value="InlayHintsGeneralOptionsPageId" type="string" />
+    <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
   </component>
   <component name="CMakePresetLoader">{
   &quot;useNewFormat&quot;: true
@@ -27,11 +30,12 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="965deeb9-15b7-4abd-b953-883148e61f54" name="Changes" comment="Add Class &quot;datei&quot;">
+    <list default="true" id="965deeb9-15b7-4abd-b953-883148e61f54" name="Changes" comment="Removed Class &quot;CommandLine&quot; -&gt; currently writing own library:&#10;https://github.com/DerAntiTechnicker/Command-Line">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CommandLine.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CommandLine.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TEST.bin" beforeDir="false" afterPath="$PROJECT_DIR$/TEST.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/datei.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/datei.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/datei.h" beforeDir="false" afterPath="$PROJECT_DIR$/datei.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -65,8 +69,7 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock://C:/Users/Florian Schneck/CLionProjects/Binary-Editor/datei.h" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/Florian Schneck/CLionProjects/Binary-Editor/datei.h" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/Florian Schneck/CLionProjects/Binary-Editor/main.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/Users/Florian Schneck/CLionProjects/Binary-Editor/main.cpp" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProjectApplicationVersion">
@@ -98,12 +101,13 @@
     &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;Test__CLion&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Florian Schneck/CLionProjects/Binary-Editor&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;CPPToolchains&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;advanced.settings&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -132,7 +136,12 @@
       <workItem from="1755013988640" duration="1168000" />
       <workItem from="1755089311518" duration="3874000" />
       <workItem from="1755099467211" duration="12000" />
-      <workItem from="1755100715234" duration="51000" />
+      <workItem from="1755100715234" duration="378000" />
+      <workItem from="1756199890095" duration="32000" />
+      <workItem from="1756232548474" duration="183000" />
+      <workItem from="1756232740080" duration="11086000" />
+      <workItem from="1756274232842" duration="7000" />
+      <workItem from="1756274626748" duration="12714000" />
     </task>
     <task id="LOCAL-00001" summary="Add Class &quot;datei&quot;">
       <option name="closed" value="true" />
@@ -142,7 +151,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755002282750</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Removed Class &quot;CommandLine&quot; -&gt; currently writing own library:&#10;https://github.com/DerAntiTechnicker/Command-Line">
+      <option name="closed" value="true" />
+      <created>1755100956178</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1755100956178</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -175,7 +192,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="Test_CLion" />
+                        <option value="origin/Test_CLion" />
                       </list>
                     </value>
                   </entry>
@@ -189,6 +206,11 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Add Class &quot;datei&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add Class &quot;datei&quot;" />
+    <MESSAGE value="Removed Class &quot;CommandLine&quot; -&gt; currently writing own library:&#10;https://github.com/DerAntiTechnicker/Command-Line" />
+    <option name="LAST_COMMIT_MESSAGE" value="Removed Class &quot;CommandLine&quot; -&gt; currently writing own library:&#10;https://github.com/DerAntiTechnicker/Command-Line" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
