@@ -30,9 +30,13 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="965deeb9-15b7-4abd-b953-883148e61f54" name="Changes" comment="Removed Class &quot;CommandLine&quot; -&gt; currently writing own library:&#10;https://github.com/DerAntiTechnicker/Command-Line">
+    <list default="true" id="965deeb9-15b7-4abd-b953-883148e61f54" name="Changes" comment="CLI">
+      <change afterPath="$PROJECT_DIR$/iValue.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/iValue.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CommandLine.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/CommandLine.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CommandLine.h" beforeDir="false" afterPath="$PROJECT_DIR$/CommandLine.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TEST.bin" beforeDir="false" afterPath="$PROJECT_DIR$/TEST.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/datei.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/datei.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/datei.h" beforeDir="false" afterPath="$PROJECT_DIR$/datei.h" afterDir="false" />
@@ -141,7 +145,10 @@
       <workItem from="1756232548474" duration="183000" />
       <workItem from="1756232740080" duration="11086000" />
       <workItem from="1756274232842" duration="7000" />
-      <workItem from="1756274626748" duration="12714000" />
+      <workItem from="1756274626748" duration="24779000" />
+      <workItem from="1756456386573" duration="133000" />
+      <workItem from="1756456544385" duration="338000" />
+      <workItem from="1756456900971" duration="2679000" />
     </task>
     <task id="LOCAL-00001" summary="Add Class &quot;datei&quot;">
       <option name="closed" value="true" />
@@ -159,7 +166,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755100956178</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="CLI">
+      <option name="closed" value="true" />
+      <created>1756379375500</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1756379375500</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -207,7 +222,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Add Class &quot;datei&quot;" />
     <MESSAGE value="Removed Class &quot;CommandLine&quot; -&gt; currently writing own library:&#10;https://github.com/DerAntiTechnicker/Command-Line" />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed Class &quot;CommandLine&quot; -&gt; currently writing own library:&#10;https://github.com/DerAntiTechnicker/Command-Line" />
+    <MESSAGE value="CLI" />
+    <option name="LAST_COMMIT_MESSAGE" value="CLI" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

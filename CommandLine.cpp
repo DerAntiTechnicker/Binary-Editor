@@ -48,8 +48,8 @@ int CommandLine::StrToInt(const int &arg_num) const {
 
 /******************* add a Command *******************/
 
-void CommandLine::addCommand(const std::string &name, const std::function <void()>& func) {
-    if (command.count(name) == 0) {     // if not a single command called like this is found
+void CommandLine::addCommand(const std::string &name, const std::function <void()> &func) {
+    if (!command.contains(name)) {     // if no command called like this is found
         // command.insert({name, {{func, {}}, ""}});
         command.insert({name, {{func, std::vector<std::string>{}}, ""}});
     }
@@ -59,7 +59,7 @@ void CommandLine::addCommand(const std::string &name, const std::function <void(
 /****************** erase a Command ******************/
 
 void CommandLine::eraseCommand(const std::string &name) {
-    if (command.count(name) == 0) std::cout << "WARNING - You are trying to erase the command: \"" << name << "\", but it does not exist!" << std::endl;
+    if (!command.contains(name)) std::cout << "WARNING - You are trying to erase the command: \"" << name << "\", but it does not exist!" << std::endl;
     else command.erase(name);       // erase the command
 }
 
@@ -100,7 +100,7 @@ void CommandLine::execute_Command(const std::string &name) {
 
 /******************* if Argument ********************/
 
-bool CommandLine::arg(const std::string &command_name, const std::string &arg_name, const int &pos) {
+bool CommandLine::addArg(const std::string &command_name, const std::string &arg_name, const int &pos) {
     command.at(command_name).first.second.push_back(arg_name);      // add the argument name to the command
 
     if (argument.size() > 1) {
@@ -109,7 +109,7 @@ bool CommandLine::arg(const std::string &command_name, const std::string &arg_na
             if (argument[i] == arg_name) t++;
         }
         if (t > 0) return true;
-        else {
+        else {      // not needed, because if (t > 0) == true -> return true; -> it will never be executed
             std::cout << "ERROR - Argument does not exist!" << std::endl;
             return false;
         }

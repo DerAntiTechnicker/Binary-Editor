@@ -11,4 +11,6 @@ add_executable(Binary_Editor
         CommandLine.cpp
         CommandLine.h
         main.cpp
+        iValue.cpp
+        iValue.h
 )

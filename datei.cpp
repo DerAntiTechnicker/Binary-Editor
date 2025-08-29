@@ -26,17 +26,15 @@ void Print_Return(const int ReturnValue) {
 /*********************************************************************/
 /**************** Check if File can be opened ****************/
 
-bool datei::file_status() {
+int datei::file_status() {
     file.open(path, std::ios::in | std::ios::binary);
 
     if (file.is_open()) {
-        std::cout << "File found!" << std::endl;
         file.close();
-        return true;
+        return OK;
     } else {
-        std::cout << "File NOT found!" << std::endl;
         file.close();
-        return false;
+        return ERROR_OPEN_FILE;
     }
 }
 
@@ -88,7 +86,12 @@ bool datei::check_settings() {
 
 /************ set Path *************/
 
-bool datei::setPath(const std::string &path) {
+bool datei::setPath(std::string path) {
+    if (path.contains('\\')) {
+        for (int i = 0; i < path.size(); i++) {
+            if (path[i] == '\\') path[i] = '/';
+        }
+    }
     this->path = path;
     return this->file_status();
 }
@@ -96,8 +99,6 @@ bool datei::setPath(const std::string &path) {
 /********** set BlockSize **********/
 
 int datei::setBlockSize(const int &blockSize) {
-    std::cout << "1" << std::endl;
-
     switch (this->blockSize) {
         // delete old Array
         default: // when not 1, 2, 4, 8
@@ -120,15 +121,9 @@ int datei::setBlockSize(const int &blockSize) {
             break;
     }
 
-    std::cout << "2" << std::endl;
-
     this->blockSize = blockSize; // write new BlockSize to the Class
 
-    std::cout << "3" << std::endl;
-
     apply_Byte_Settings(); // resize Array
-
-    std::cout << "4" << std::endl;
 
     return OK;
 }
@@ -306,7 +301,8 @@ int datei::read() {
     file.seekg(ReadPos, std::ios::beg);        // read from Byte "fromByte"
 
     if (file.is_open()) {
-        std::variant <__int8, __int16, __int32, __int64> max_value;
+        int max_digits = 0;
+
         switch (blockSize) {
             default:
                 return ERROR;
@@ -314,22 +310,19 @@ int datei::read() {
             case 1:
                 for (int i = 0; i < bytesPerCycle / blockSize; i++) {
                     file.read(&iValue_1[i], blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
-                    if (digits == -1 && std::get<__int8>(max_value) < iValue_1[i]) max_value = iValue_1[i];       // max. read Value for auto Calc digits, only when digits == -1
+                    if (digits == -1 && max_digits < calc_digits(iValue_1[i])) max_digits = calc_digits(iValue_1[i]);
                 }
                 if (digits == -1) {
-                    digits = calc_digits(std::get<__int8>(max_value));
-                    Print_Values(iValue_1);
-                    digits = -1;
+                    digits = max_digits;
                 }
-                else Print_Values(iValue_1);
                 break;
             case 2:
                 for (int i = 0; i < bytesPerCycle / blockSize; i++) {
                     file.read(reinterpret_cast<char*>(&iValue_2[i]), blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
-                    if (digits == -1 && std::get<__int16>(max_value) < iValue_2[i]) max_value = iValue_2[i];       // max. read Value for auto Calc digits, only when digits == -1
+                    if (digits == -1 && max_digits < calc_digits(iValue_2[i])) max_digits = calc_digits(iValue_2[i]);
                 }
                 if (digits == -1) {
-                    digits = calc_digits(std::get<__int16>(max_value));
+                    digits = max_digits;
                     Print_Values(iValue_2);
                     digits = -1;
                 }
@@ -338,39 +331,59 @@ int datei::read() {
             case 4:
                 for (int i = 0; i < bytesPerCycle / blockSize; i++) {
                     file.read(reinterpret_cast<char*>(&iValue_4[i]), blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
-                    if (digits == -1 && std::get<__int32>(max_value) < iValue_4[i]) max_value = iValue_4[i];       // max. read Value for auto Calc digits, only when digits == -1
+                    if (digits == -1 && max_digits < calc_digits(iValue_4[i])) max_digits = calc_digits(iValue_4[i]);
                 }
                 if (digits == -1) {
-                    digits = calc_digits(std::get<__int32>(max_value));
-                    Print_Values(iValue_4);
+                    digits = max_digits;
+                    Print_Values(iValue_2);
                     digits = -1;
                 }
-                else Print_Values(iValue_4);
+                else Print_Values(iValue_2);
                 break;
             case 8:
                 for (int i = 0; i < bytesPerCycle / blockSize; i++) {
                     file.read(reinterpret_cast<char*>(&iValue_8[i]), blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
-                    if (digits == -1 && std::get<__int64>(max_value) < iValue_8[i]) max_value = iValue_8[i];       // max. read Value for auto Calc digits, only when digits == -1
+                    if (digits == -1 && max_digits < calc_digits(iValue_4[i])) max_digits = calc_digits(iValue_4[i]);
                 }
                 if (digits == -1) {
-                    digits = calc_digits(std::get<__int64>(max_value));
-                    Print_Values(iValue_8);
-                    digits = -1;
+                    digits = max_digits;
+                    Print_Values(iValue_2);
                 }
-                else Print_Values(iValue_8);
+                else Print_Values(iValue_2);
                 break;
         }
-        digits = -1;
         file.close();
         std::cout << std::endl;
-
-        std::cout << "read" << std::endl;
-
+        file.close();
         return OK;
     }
-    file.close();
     return ERROR_OPEN_FILE; // Happens only, when the File can't be opened...
 } // If it can be opened, it Returns "OK" and end the function
+
+/*************************** Print ***************************/
+
+int datei::print() {
+    switch (blockSize) {
+        case 1:
+            Print_Values(iValue_1);
+            digits = -1;
+            break;
+    }
+    return OK;
+}
+
+/*************************** Write ***************************/
+
+int datei::write(const std::string &text) {
+    file.open(path, std::ios::binary | std::ios::out);
+    if (file.is_open()) {
+        file.write(text.c_str(), static_cast<int>(text.size()));
+        file.close();
+        return OK;
+    }
+    else return ERROR_OPEN_FILE;
+}
+
 
 /**************************** Init Table *****************************/
 
@@ -395,14 +408,14 @@ void datei::init_Table() {
     for (int i = 0; i < index_digits + 1; i++) printf("%c", 205); // line Space in Row 0; line 1
     printf("%c", 206); // character to connect vertical and horizontal line
     for (int i = 0; i < (digits + 3) * columns; i++) printf("%c", 205); // horizontal dividing line
-
-    std::cout << "initTable" << std::endl;
 }
 
 /*************************** Print Values ****************************/
 
 template<class Typ>
 int datei::Print_Values(Typ &Value) {
+    std::cout << std::endl;
+
     init_Table();
     for (int a = 0; a < bytesPerCycle / blockSize; a++) {
         // amount of Values
@@ -438,6 +451,32 @@ int datei::Print_Values(Typ &Value) {
                 break;
         }
     }
-    std::cout << "Print_Values" << std::endl;
+    std::cout << std::endl;
+    return OK;
+}
+
+int datei::Print_ASCII() const {
+    std::cout << std::endl;
+    for (int a = 0; a < bytesPerCycle / blockSize; a++) {       // amount of Values
+        switch (blockSize) {        // no default case -> blockSize already verified in setBlockSize()
+            case 1:
+                for (int b = 0; b < digits - calc_digits(iValue_1[a]); b++) printf("%c", placeholder);
+                printf("%c", static_cast<int>(iValue_1[a]));
+                break;
+            case 2:
+                for (int b = 0; b < digits - calc_digits(iValue_2[a]); b++) printf("%c", placeholder);
+                printf("%c", static_cast<int>(iValue_2[a]));
+                break;
+            case 4:
+                for (int b = 0; b < digits - calc_digits(iValue_4[a]); b++) printf("%c", placeholder);
+                printf("%c", iValue_4[a]);
+                break;
+            case 8:
+                for (int b = 0; b < digits - calc_digits(iValue_8[a]); b++) printf("%c", placeholder);
+                printf("%c", static_cast<int>(iValue_8[a]));
+                break;
+        }
+    }
+    std::cout << std::endl;
     return OK;
 }

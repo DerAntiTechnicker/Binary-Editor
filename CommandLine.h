@@ -22,11 +22,11 @@ public:
         running = true;
 
         // command.insert({"exit", {[this](){running = false;}, "Exit the Programm"}});
-        addCommand("exit", [this](){running = false;});
+        addCommand("exit",[this](){running = false;});
 
-        addCommand("help", [this](){display_explanations();});
+        addCommand("help",[this](){display_explanations();});
 
-        addCommand("clear", [](){
+        addCommand("clear",[](){
         printf("\033[2J");      // erase console
         system("cls");      // erase console - erases and removes the previous lines
         printf("\033[H");
@@ -38,12 +38,12 @@ public:
         argument.emplace_back(" ");
     }
 
-    void addCommand(const std::string &name, const std::function <void()>& func);        // add a command to "commands"
+    void addCommand(const std::string &name, const std::function <void()> &func);        // add a command to "commands"
     void eraseCommand(const std::string &name);                                          // erase a Command
     void add_explanation(const std::string &name, const std::string &explanation);       // add an explanation to an existing Command "name"
     void display_explanations() const;                                                         // displays a list of all Commands and, if avaliable, the explanations
 
-    bool arg(const std::string &command_name, const std::string &arg_name, const int &pos);
+    bool addArg(const std::string &command_name, const std::string &arg_name, const int &pos);
     int getArgValue(const int &pos) const;      // Get the input Value as an int ("1" -> 1)
     std::string getArg(const int &pos) const;       // get the Arg Nr. pos as the input string
     int GetArgCount() const;

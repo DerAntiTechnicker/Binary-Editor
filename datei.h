@@ -7,7 +7,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <variant>
 
 /************ Constructor Default Settings ************/
 
@@ -35,7 +34,7 @@ public:     // file - related variables
     std::string path;
     std::fstream file;
 
-private:    // Internal Variables
+// private:    // Internal Variables
     __int8 *iValue_1;       // Variable to store 1 Byte Values
     __int16 *iValue_2;     // Variable to store 2 Byte Values
     __int32 *iValue_4;     // Variable to store 4 Byte Values
@@ -74,9 +73,11 @@ public:
     }
 
     int read();     // Read from a File
-    std::string getPath() const;        // return the current Path
-    bool setPath(const std::string &path);      // update the Path
+    int print();    // prints the Values to the Console
+    int write(const std::string &text);
+    int Print_ASCII() const;
 
+    bool setPath(std::string path);      // update the Path
     int setBlockSize(const int &blockSize);
     int setBytesPerCycle(const int &bytesPerCycle);
     int setColumns(const int &columns);
@@ -84,6 +85,7 @@ public:
     int setPlaceholder(const char &placeholder);
     int setReadPos(const int &ReadPos);
 
+    std::string getPath() const;        // return the current
     int getBlockSize() const;
     int getBytesPerCycle() const;
     int getColumns() const;
@@ -95,8 +97,8 @@ public:
     bool check_settings();
 
 // private:    // Internal Functions
-public:
-    bool file_status();    // returns TRUE if a file can be opened, if not: FALSE
+private:
+    int file_status();    // returns TRUE if a file can be opened, if not: FALSE
     void set_null_ptr();    // sets every pointer (iValue_8, ...) to nullptr
     void apply_Byte_Settings();     // resize the Arrays where to store the Values
 
