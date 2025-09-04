@@ -48,6 +48,7 @@ public:     // file - related variables
     __int32 *iValue_4;     // Variable to store 4 Byte Values
     __int64 *iValue_8;     // Variable to store 8 Byte Values
 
+    std::string *Value;
 
     int blockSize;      // Size of a read Value [Bytes]
     int bytesPerCycle;      // How many Bytes are extracted [Bytes]
@@ -80,6 +81,7 @@ public:
         delete[] iValue_2;
         delete[] iValue_4;
         delete[] iValue_8;
+        delete[] Value;
         file.close();       // Close File in case it is still open
     }
 
@@ -123,8 +125,7 @@ private:
 
     void init_Table();
 
-    template<class Typ>
-    Return_Value Print_Values(Typ &Value);
+    Return_Value Print_Values();
 };
 
 #endif //FILE_H

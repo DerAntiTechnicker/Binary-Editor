@@ -1,8 +1,5 @@
-//
-// Created by Florian Schneck on 09.08.2025.
-//
-
 #include "datei.h"
+#include <filesystem>
 
 /***************** Print the ERROR - return - codes to the console *****************/
 
@@ -128,10 +125,12 @@ Return_Value datei::setBlockSize(const int &blockSize) {
             iValue_8 = nullptr;
             break;
     }
+    delete[] Value;
+    Value = nullptr;
 
     this->blockSize = blockSize; // write new BlockSize to the Class
 
-    apply_Byte_Settings(); // resize Array
+    apply_Byte_Settings(); // resize Arrays
 
     return OK;
 }
@@ -278,6 +277,7 @@ void datei::apply_Byte_Settings() {
             iValue_8 = new __int64[bytesPerCycle / 8];
             break;
     }
+    Value = new std::string[bytesPerCycle / blockSize];
 }
 
 /********************* Calculate Digits **********************/
@@ -327,6 +327,7 @@ Return_Value datei::read() {
             case 1:
                 for (int i = 0; i < bytesPerCycle / blockSize; i++) {
                     file.read(&iValue_1[i], blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
+                    Value[i] = ValuetoString(iValue_1[i]);
                     if (digit_mode == AUTO && max_digits < calc_digits(iValue_1[i])) max_digits = calc_digits(iValue_1[i]);
                 }
                 if (digit_mode == AUTO) {
@@ -336,6 +337,7 @@ Return_Value datei::read() {
             case 2:
                 for (int i = 0; i < bytesPerCycle / blockSize; i++) {
                     file.read(reinterpret_cast<char*>(&iValue_2[i]), blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
+                    Value[i] = ValuetoString(iValue_2[i]);
                     if (digit_mode == AUTO && max_digits < calc_digits(iValue_2[i])) max_digits = calc_digits(iValue_2[i]);
                 }
                 if (digit_mode == AUTO) {
@@ -345,6 +347,7 @@ Return_Value datei::read() {
             case 4:
                 for (int i = 0; i < bytesPerCycle / blockSize; i++) {
                     file.read(reinterpret_cast<char*>(&iValue_4[i]), blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
+                    Value[i] = ValuetoString(iValue_4[i]);
                     if (digit_mode == AUTO && max_digits < calc_digits(iValue_4[i])) max_digits = calc_digits(iValue_4[i]);
                 }
                 if (digit_mode == AUTO) {
@@ -354,6 +357,7 @@ Return_Value datei::read() {
             case 8:
                 for (int i = 0; i < bytesPerCycle / blockSize; i++) {
                     file.read(reinterpret_cast<char*>(&iValue_8[i]), blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
+                    Value[i] = ValuetoString(iValue_8[i]);
                     if (digit_mode == AUTO && max_digits < calc_digits(iValue_8[i])) max_digits = calc_digits(iValue_8[i]);
                 }
                 if (digit_mode == AUTO) {
@@ -370,20 +374,22 @@ Return_Value datei::read() {
 /*************************** Print ***************************/
 
 Return_Value datei::print() {
-    switch (blockSize) {
-        case 1:
-            Print_Values(iValue_1);
-            break;
-        case 2:
-            Print_Values(iValue_2);
-            break;
-        case 4:
-            Print_Values(iValue_4);
-            break;
-        case 8:
-            Print_Values(iValue_8);
-            break;
-    }
+    // switch (blockSize) {
+    //     case 1:
+    //         Print_Values(iValue_1);
+    //         break;
+    //     case 2:
+    //         Print_Values(iValue_2);
+    //         break;
+    //     case 4:
+    //         Print_Values(iValue_4);
+    //         break;
+    //     case 8:
+    //         Print_Values(iValue_8);
+    //         break;
+    // }
+
+    Print_Values();
     return OK;
 }
 
@@ -408,8 +414,8 @@ void datei::init_Table() {
     for (int i = 0; i < index_digits; i++) printf(" "); // Empty Space in Row 0 line 0
     printf(" %c ", 186); // start of the index - column
 
-    for (int i = 0; i < columns; i++) {
-        // Do once for every column
+
+    for (int i = 0; i < columns; i++) {     // Do once for every column
 
         int digits = calc_digits(i);
 
@@ -417,7 +423,6 @@ void datei::init_Table() {
         printf("%d", i); // print column lettering
         printf(" | "); // print spacer between columns
     }
-
     printf("\n"); // New line for dividing line
 
     for (int i = 0; i < index_digits + 1; i++) printf("%c", 205); // line Space in Row 0; line 1
@@ -427,8 +432,7 @@ void datei::init_Table() {
 
 /*************************** Print Values ****************************/
 
-template<class Typ>
-Return_Value datei::Print_Values(Typ &Value) {
+Return_Value datei::Print_Values() {
     std::cout << std::endl;
 
     init_Table();
@@ -446,25 +450,8 @@ Return_Value datei::Print_Values(Typ &Value) {
 
         printf(" ");
 
-
-        switch (blockSize) {        // no default case -> blockSize already verified in setBlockSize()
-            case 1:
-                for (int b = 0; b < digits - calc_digits(iValue_1[a]); b++) printf("%c", placeholder);
-                std::cout << static_cast<int>(iValue_1[a]) << " |";
-                break;
-            case 2:
-                for (int b = 0; b < digits - calc_digits(iValue_2[a]); b++) printf("%c", placeholder);
-                std::cout << static_cast<int>(iValue_2[a]) << " |";
-                break;
-            case 4:
-                for (int b = 0; b < digits - calc_digits(iValue_4[a]); b++) printf("%c", placeholder);
-                std::cout << iValue_4[a] << " |";
-                break;
-            case 8:
-                for (int b = 0; b < digits - calc_digits(iValue_8[a]); b++) printf("%c", placeholder);
-                std::cout << static_cast<int>(iValue_8[a]) << " |";
-                break;
-        }
+        for (int b = 0; b < digits - Value[a].size(); b++) printf("%c", placeholder);
+        std::cout << Value[a] << " |";
     }
     std::cout << "\n" << std::endl;
     return OK;
@@ -476,11 +463,11 @@ Return_Value datei::Print_ASCII() const {
         switch (blockSize) {        // no default case -> blockSize already verified in setBlockSize()
             case 1:
                 for (int b = 0; b < digits - calc_digits(iValue_1[a]); b++) printf("%c", placeholder);
-                printf("%c", static_cast<int>(iValue_1[a]));
+                printf("%c", iValue_1[a]);
                 break;
             case 2:
                 for (int b = 0; b < digits - calc_digits(iValue_2[a]); b++) printf("%c", placeholder);
-                printf("%c", static_cast<int>(iValue_2[a]));
+                printf("%c", iValue_2[a]);
                 break;
             case 4:
                 for (int b = 0; b < digits - calc_digits(iValue_4[a]); b++) printf("%c", placeholder);
@@ -488,7 +475,7 @@ Return_Value datei::Print_ASCII() const {
                 break;
             case 8:
                 for (int b = 0; b < digits - calc_digits(iValue_8[a]); b++) printf("%c", placeholder);
-                printf("%c", static_cast<int>(iValue_8[a]));
+                printf("%c", iValue_8[a]);
                 break;
         }
     }
@@ -497,15 +484,49 @@ Return_Value datei::Print_ASCII() const {
 }
 
 Return_Value datei::getCSV() {
-    int pos = static_cast<int>(path.size()) - 4;
-    std::string path = this->path;
-    path.replace(pos, 4, ".csv");
+    std::string path;
+
+    std::cout << "Path to store CSV: ";
+    std::getline(std::cin, path);
+    if (path.contains('\\')) {
+        for (char &i : path) {
+            if (i == '\\') i = '/';
+        }
+    }
+
+    if (std::filesystem::exists(path)) {
+        char yn;
+        std::cout << "Override \"" << path << "\" ?" << std::endl;
+        std::cin >> yn;
+        if (yn == 'y') {
+            file.open(path, std::ios::trunc | std::ios::out);
+        }
+        else {
+            path.replace(path.size() - 4, 4, "1.csv");
+            file.open(path, std::ios::out);
+        }
+    }
+    else {
+        file.open(path, std::ios::out);
+    }
+
     std::cout << path << std::endl;
-    file.open(path, std::ios::out);
 
     std::string string;
-
+    string += "; ";
+    for (int i = 0; i < columns; i++) { string += std::to_string(i) += ";"; }
+    for (int i = 0; i < bytesPerCycle / blockSize; i++) {
+        if (i % columns == 0) {
+            string += "\n";
+            string += std::to_string(i/8) += "; ";
+        }
+        string += Value[i];
+        string += "; ";
+    }
 
     file<<string;
     file.close();
+    std::cout << std::endl;
+
+    return OK;
 }
