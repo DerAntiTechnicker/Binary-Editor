@@ -17,7 +17,7 @@
 
 /******************************************************/
 
-enum Error_Codes{      // Return Codes...
+enum Return_Value {      // Return Codes...
     OK,
     ERROR,
     ERROR_WORKING_BYTES,
@@ -25,7 +25,15 @@ enum Error_Codes{      // Return Codes...
     ERROR_DISPLAY_SETTINGS
 };
 
-void PrintError(int ReturnValue);       // Print Error Information from recieved return code to console
+enum mode {
+    MANUAL,
+    AUTO
+};
+
+void Print_Return(int ReturnValue);       // Print Error Information from recieved return code to console
+
+template<class Typ>
+std::string ValuetoString(const Typ &Value);
 
 /************************************/
 
@@ -34,78 +42,90 @@ public:     // file - related variables
     std::string path;
     std::fstream file;
 
-private:    // Internal Variables
-    __int8 *iValue_8;       // Variable to store 1 Byte Values
-    __int16 *iValue_16;     // Variable to store 2 Byte Values
-    __int32 *iValue_32;     // Variable to store 4 Byte Values
-    __int64 *iValue_64;     // Variable to store 8 Byte Values
+// private:    // Internal Variables
+    __int8 *iValue_1;       // Variable to store 1 Byte Values
+    __int16 *iValue_2;     // Variable to store 2 Byte Values
+    __int32 *iValue_4;     // Variable to store 4 Byte Values
+    __int64 *iValue_8;     // Variable to store 8 Byte Values
+
+    std::string *Value;
 
     int blockSize;      // Size of a read Value [Bytes]
     int bytesPerCycle;      // How many Bytes are extracted [Bytes]
 
-    int max_index_digits;
+    int index_digits;
 
     int digits;    // The digits per Value to be displayed -> digitsPerNumber = 3 -> "2" is displayed as "002"
+    mode digit_mode;
     int columns;         // The number of columns to be displayed when reading from a file
+    char placeholder;       // placeholder for not used characters (f.ex.: 001)
+
+    int ReadPos;        // pos to start reading from
 
 public:
     datei() {       // default Konstruktor
         set_null_ptr();
         path = "";
+        placeholder = '0';
         blockSize = DEFAULT_BLOCK_SIZE;     // Default Values
         bytesPerCycle = DEFAULT_BYTES_PER_CYCLE;
         columns = DEFAULT_COLUMNS;
         digits = DEFAULT_DIGITS;
-        check_settings();   // called, because it also calculates the max. Index digits...
-    }
-    explicit datei (const std::string path) {     // überladener Konstruktor -> path
-        this->set_null_ptr();
-        this->path = path;
-        this->file_status();        // Print to the console, if the File can be opened, or not
-        blockSize = DEFAULT_BLOCK_SIZE;     // Default Values
-        bytesPerCycle = DEFAULT_BYTES_PER_CYCLE;
-        columns = DEFAULT_COLUMNS;
-        digits = DEFAULT_DIGITS;
-
+        digit_mode = AUTO;
+        ReadPos = 0;
         check_settings();   // called, because it also calculates the max. Index digits...
     }
 
     ~datei() {      // Destructor
+        delete[] iValue_1;
+        delete[] iValue_2;
+        delete[] iValue_4;
         delete[] iValue_8;
-        delete[] iValue_16;
-        delete[] iValue_32;
-        delete[] iValue_64;
+        delete[] Value;
         file.close();       // Close File in case it is still open
     }
 
-    int read();     // Read from a File
-    std::string getPath() const;        // return the current Path
-    bool setPath(const std::string &path);      // update the Path
+    Return_Value read();     // Read from a File
+    Return_Value print();    // prints the Values to the Console
+    Return_Value write(const std::string &text);
+    Return_Value Print_ASCII() const;
 
-    int setBlockSize(const int &blockSize);
-    int setBytesPerCycle(const int &bytesPerCycle);
-    int setColumns(const int &columns);
-    int setDigits(const int &digits);
+    Return_Value getCSV();
 
-    int setByteSettings(const int &blocksize, const int &bytesPerCycle);
-    int setTableSettings(const int &columns, const int &digits);
+    bool setPath(std::string path);      // update the Path
+    Return_Value setBlockSize(const int &blockSize);
+    Return_Value setBytesPerCycle(const int &bytesPerCycle);
+    Return_Value setColumns(const int &columns);
+    Return_Value setDigits(const int &digits);
+    Return_Value setPlaceholder(const char &placeholder);
+    Return_Value setReadPos(const int &ReadPos);
+
+    std::string getPath() const;        // return the current
+    int getBlockSize() const;
+    int getBytesPerCycle() const;
+    int getColumns() const;
+    int getDigits() const;
+    std::string getDigitMode() const;
+    char getPlaceholder() const;
+    int getReadPos() const;
+
 
     bool check_settings();
 
-private:    // Internal Functions
-    bool file_status();    // returns TRUE if a file can be opened, if not: FALSE
+// private:    // Internal Functions
+private:
+    Return_Value file_status();    // returns TRUE if a file can be opened, if not: FALSE
     void set_null_ptr();    // sets every pointer (iValue_8, ...) to nullptr
     void apply_Byte_Settings();     // resize the Arrays where to store the Values
-    static int getDigits(int Value);    // get the number of digits of the give Value
+
+    template<class Typ>
+    static int calc_digits(Typ Value);    // get the number of digits of the give Value
 
     void apply_max_index_digits();
 
     void init_Table();
 
-    template<class Typ>
-    int Print_Values(Typ *Value);
+    Return_Value Print_Values();
 };
-
-
 
 #endif //FILE_H

@@ -1,12 +1,9 @@
-//
-// Created by Florian Schneck on 09.08.2025.
-//
-
 #include "datei.h"
+#include <filesystem>
 
 /***************** Print the ERROR - return - codes to the console *****************/
 
-void PrintError(int ReturnValue) {
+void Print_Return(const int ReturnValue) {
     switch (ReturnValue) {
         default: std::cout << "No such Error Code..." << std::endl;
             break;
@@ -24,20 +21,25 @@ void PrintError(int ReturnValue) {
 }
 
 /*********************************************************************/
+
+template<class Typ>
+std::string ValuetoString(const Typ &Value) {
+    return std::to_string(Value);
+}
+
+/*********************************************************************/
 /**************** Check if File can be opened ****************/
 
-bool datei::file_status() {
+Return_Value datei::file_status() {
     file.open(path, std::ios::in | std::ios::binary);
 
     if (file.is_open()) {
-        std::cout << "File found!" << std::endl;
         file.close();
-        return true;
+        return OK;
     }
-    else {
-        std::cout << "File NOT found!" << std::endl;
+    else {      // else not necessary, because of return OK;
         file.close();
-        return false;
+        return ERROR_OPEN_FILE;
     }
 }
 
@@ -45,23 +47,10 @@ bool datei::file_status() {
 
 void datei::set_null_ptr() {
     std::cout << "Set NullPtr" << std::endl;
+    iValue_1 = nullptr;
+    iValue_2 = nullptr;
+    iValue_4 = nullptr;
     iValue_8 = nullptr;
-    iValue_16 = nullptr;
-    iValue_32 = nullptr;
-    iValue_64 = nullptr;
-}
-
-/******************* Set a new File - Path *******************/
-
-bool datei::setPath(const std::string &path) {
-    this->path = path;
-    return this->file_status();
-}
-
-/****************** get the new File - Path ******************/
-
-std::string datei::getPath() const {
-    return path;
 }
 
 /*********************** check Settings ************************/
@@ -72,69 +61,84 @@ bool datei::check_settings() {
     int max_column_digits = 0;
 
     /***************/
-    buffer = (bytesPerCycle / blockSize) / columns;      // Get max. Index - Digits
+    buffer = (bytesPerCycle / blockSize) / columns; // Get max. Index - Digits
     while (buffer > 0) {
         buffer /= 10;
         max_index_digits++;
     }
-    this->max_index_digits = max_index_digits;      // safe the calculated max. Index digits to the class
+    this->index_digits = max_index_digits; // safe the calculated max. Index digits to the class
     /***************/
 
-    if (blockSize != 1 && blockSize != 2 && blockSize != 4 && blockSize != 8) return false;     // Check blocksize
+    if (blockSize != 1 && blockSize != 2 && blockSize != 4 && blockSize != 8) return false; // Check blocksize
 
-    if (bytesPerCycle < blockSize) return false;        // Check bytesPerCycle
+    if (bytesPerCycle < blockSize) return false; // Check bytesPerCycle
 
-    if (columns < 1) return false;      // Check Columns
+    if (columns < 1) return false; // Check Columns
 
-    buffer = columns;        // Get max. column lettering Digits
+    buffer = columns; // Get max. column lettering Digits
     while (buffer > 0) {
         buffer /= 10;
         max_column_digits++;
     }
-    if (max_column_digits > digits) return false;      // Check max. column lettering Digits
+    if (max_column_digits > digits) return false; // Check max. column lettering Digits
 
     return true;
 }
 
 /************************* Settings **************************/
 
-/*int datei::setBytes(const int &blockSize, const int &bytesPerCycle) {
-    this->blockSize = blockSize;
-    this->bytesPerCycle = bytesPerCycle;
-    if (blockSize > bytesPerCycle || blockSize != 1 && blockSize != 2 && blockSize != 4 && blockSize != 8) return ERROR_WORKING_BYTES;
-    switch (blockSize) {
-        // default: break;
-        case 1: iValue_8 = new __int8[bytesPerCycle];
-            break;
+/*********************************** Set ***********************************/
 
-        case 2: iValue_16 = new __int16[bytesPerCycle / 2];
-            break;
+/************ set Path *************/
 
-        case 4: iValue_32 = new __int32[bytesPerCycle / 4];
-            break;
+bool datei::setPath(std::string path) {
+    if (path.contains('\\')) {
+        for (char & i : path) {
+            if (i == '\\') i = '/';
+        }
+    }
+    this->path = path;
+    return this->file_status();
+}
 
-        case 8: iValue_64 = new __int64[bytesPerCycle / 8];
+/********** set BlockSize **********/
+
+Return_Value datei::setBlockSize(const int &blockSize) {
+    switch (this->blockSize) {
+        // delete old Array
+        default: // when not 1, 2, 4, 8
+            return ERROR_WORKING_BYTES;
+        case 1:
+            delete[] iValue_1;
+            iValue_1 = nullptr;
+            break;
+        case 2:
+            delete[] iValue_2;
+            iValue_2 = nullptr;
+            break;
+        case 4:
+            delete[] iValue_4;
+            iValue_4 = nullptr;
+            break;
+        case 8:
+            delete[] iValue_8;
+            iValue_8 = nullptr;
             break;
     }
+    delete[] Value;
+    Value = nullptr;
 
-    return OK;
-}*/
+    this->blockSize = blockSize; // write new BlockSize to the Class
 
-int datei::setBlockSize(const int &blockSize) {
-    std::cout << "BlockSize - ";
-
-    if (blockSize != 1 && blockSize != 2 && blockSize != 4 && blockSize != 8) return ERROR_WORKING_BYTES;     // Check blocksize
-
-    this->blockSize = blockSize;
-    apply_Byte_Settings();
+    apply_Byte_Settings(); // resize Arrays
 
     return OK;
 }
 
-int datei::setBytesPerCycle(const int &bytesPerCycle) {
-    std::cout << "BytesPerCycle - ";
+/********** set BytesPerCycle **********/
 
-    if (bytesPerCycle < blockSize) return ERROR_WORKING_BYTES;        // Check bytesPerCycle
+Return_Value datei::setBytesPerCycle(const int &bytesPerCycle) {
+    if (bytesPerCycle < blockSize) return ERROR_WORKING_BYTES; // Check bytesPerCycle
 
     this->bytesPerCycle = bytesPerCycle;
     apply_Byte_Settings();
@@ -142,106 +146,151 @@ int datei::setBytesPerCycle(const int &bytesPerCycle) {
     return OK;
 }
 
-int datei::setColumns(const int &columns) {
+/********** set Columns **********/
+
+Return_Value datei::setColumns(const int &columns) {
     int buffer = 0;
 
-    std::cout << "Columns - ";
+    if (columns < 1) return ERROR_DISPLAY_SETTINGS; // Check Columns
 
-    if (columns < 1) return ERROR_DISPLAY_SETTINGS;      // Check Columns
-
-    buffer = (bytesPerCycle / blockSize) / columns;      // Get max. Index - Digits
+    buffer = (bytesPerCycle / blockSize) / columns; // Get max. Index - Digits
     while (buffer > 0) {
         buffer /= 10;
-        max_index_digits++;
+        index_digits++;
     }
-    this->max_index_digits = max_index_digits;      // safe the calculated max. Index digits to the class
+    this->index_digits = index_digits; // safe the calculated max. Index digits to the class
 
     this->columns = columns;
     return OK;
 }
 
-int datei::setDigits(const int &digits) {
-    std::cout << "Digits - ";
+/********** set Digits **********/
 
-    int buffer = 0;
-    int max_digits = 0;
-
-    buffer = columns;        // Get max. column lettering Digits
-    while (buffer > 0) {
-        buffer /= 10;
-        max_digits++;
+Return_Value datei::setDigits(const int &digits) {
+    if (digits == -1) {     // when Digits = -1 -> Digits are calculated in read()
+        digit_mode = AUTO;
+        std::cout << "Auto set Digits - enabled" << std::endl;
+        return OK;
     }
-    if (max_digits > digits) return ERROR_DISPLAY_SETTINGS;      // Check max. column lettering Digits
+    if (calc_digits(columns) > digits) return ERROR_DISPLAY_SETTINGS; // Check max. column lettering Digits
 
-    max_digits = 0;     // reset digit count -> 0
-
-    buffer = (bytesPerCycle / blockSize) / columns;      // Get max. Index - Digits
-    while (buffer > 0) {
-        buffer /= 10;
-        max_digits++;
-    }
-    this->max_index_digits = max_digits;      // safe the calculated max. Index digits to the class
-
+    this->index_digits = calc_digits((bytesPerCycle / blockSize) / columns);        // safe the calculated max. Index digits to the class
+    this->digit_mode = MANUAL;
     this->digits = digits;
+
     return OK;
 }
 
+/******* set Placeholder ********/
 
-int datei::setByteSettings(const int &blockSize, const int &bytesPerCycle) {
-    if (blockSize != 1 && blockSize != 2 && blockSize != 4 && blockSize != 8) return ERROR_WORKING_BYTES;     // Check blocksize
-    if (bytesPerCycle < blockSize) return ERROR_WORKING_BYTES;        // Check bytesPerCycle
-
-    this->blockSize = blockSize;
-    this->bytesPerCycle = bytesPerCycle;
-
-    apply_Byte_Settings();
+Return_Value datei::setPlaceholder(const char &placeholder) {
+    this->placeholder = placeholder;
     return OK;
 }
-// When setting blockSize ad bytesPerCycle -> apply_Byte_Settings() is only once called...
 
-int datei::setTableSettings(const int &columns, const int &digits) {
-    if (setColumns(columns) != OK) return ERROR_DISPLAY_SETTINGS;
-    if (setDigits(digits) != OK) return ERROR_DISPLAY_SETTINGS;
+/********* set ReadPos **********/
+
+Return_Value datei::setReadPos(const int &ReadPos) {
+    if (ReadPos < 0) return ERROR;
+    this->ReadPos = ReadPos;
     return OK;
 }
-// Just do both within 1 funcion
 
+/***************************************************************************/
+
+/*********************************** Get ***********************************/
+
+/*********** get Path ***********/
+
+std::string datei::getPath() const {
+    return path;
+}
+
+/******** get BlockSize *********/
+
+int datei::getBlockSize() const {
+    return blockSize;
+}
+
+/******* get bytePerCycle *******/
+
+int datei::getBytesPerCycle() const {
+    return bytesPerCycle;
+}
+
+/********* get Columns **********/
+
+int datei::getColumns() const {
+    return columns;
+}
+
+/********** get Digits **********/
+
+int datei::getDigits() const {
+    return digits;
+}
+
+/******** get DigitMode *********/
+
+std::string datei::getDigitMode() const {
+    switch (digit_mode) {
+        case MANUAL:
+            return "MANUAL";
+        case AUTO:
+            return "AUTO";
+    }
+}
+
+/******* get Placeholder ********/
+
+char datei::getPlaceholder() const {
+    return placeholder;
+}
+
+/********* get ReadPos **********/
+
+int datei::getReadPos() const {
+    return ReadPos;
+}
+
+
+/***************************************************************************/
+
+/********** apply Byte Settings to Value var **********/
+// is called every time, the BlockSize or the bytesPerCycle changed, to resize the specific Value Array
 
 void datei::apply_Byte_Settings() {
-    switch (blockSize) {
-        default: break;
+    switch (blockSize) {        // no default case -> blockSize already verified in setBlockSize()
         case 1:
-            delete[] iValue_8;
-            iValue_8 = new __int8[bytesPerCycle];
+            iValue_1 = new __int8[bytesPerCycle];
             break;
 
         case 2:
-            delete[] iValue_8;
-            iValue_16 = new __int16[bytesPerCycle / 2];
+            iValue_2 = new __int16[bytesPerCycle / 2];
             break;
 
         case 4:
-            delete[] iValue_8;
-            iValue_32 = new __int32[bytesPerCycle / 4];
+            iValue_4 = new __int32[bytesPerCycle / 4];
             break;
 
         case 8:
-            delete[] iValue_8;
-            iValue_64 = new __int64[bytesPerCycle / 8];
+            iValue_8 = new __int64[bytesPerCycle / 8];
             break;
     }
+    Value = new std::string[bytesPerCycle / blockSize];
 }
 
-/************************ GetDigits **************************/
+/********************* Calculate Digits **********************/
 
-int datei::getDigits(int Value) {
+template<class Typ>
+int datei::calc_digits(Typ Value) {
     int digit_buffer = 0;
 
     if (Value == 0) return 1;
 
     if (Value < 0) {
-        Value *= -1;    // make positive
-        digit_buffer = 1;   // digit_buffer +1, because of '-'
+        Value *= -1; // make positive
+        digit_buffer = 1; // digit_buffer +1, because of '-'
         while (Value > 0) {
             Value /= 10;
             digit_buffer++;
@@ -256,93 +305,228 @@ int datei::getDigits(int Value) {
     return digit_buffer;
 }
 
+
 void datei::apply_max_index_digits() {
-    this->max_index_digits = getDigits((1 + (bytesPerCycle / blockSize)) / columns);
+    this->index_digits = calc_digits((1 + (bytesPerCycle / blockSize)) / columns);
 }
 
 
 /*************************** Read ****************************/
 
-int datei::read() {
-    init_Table();
-
+Return_Value datei::read() {
     file.open(path, std::ios::in | std::ios::binary);
+    file.seekg(ReadPos, std::ios::beg);        // read from Byte "fromByte"
+
     if (file.is_open()) {
+        int max_digits = 0;
+
         switch (blockSize) {
             default:
                 return ERROR;
-                // break;
+            // break;
             case 1:
                 for (int i = 0; i < bytesPerCycle / blockSize; i++) {
-                    file.read(&iValue_8[i], blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
+                    file.read(&iValue_1[i], blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
+                    Value[i] = ValuetoString(iValue_1[i]);
+                    if (digit_mode == AUTO && max_digits < calc_digits(iValue_1[i])) max_digits = calc_digits(iValue_1[i]);
                 }
-                if (Print_Values(iValue_8) == ERROR_DISPLAY_SETTINGS) return ERROR_DISPLAY_SETTINGS;
+                if (digit_mode == AUTO) {
+                    digits = max_digits;
+                }
                 break;
             case 2:
                 for (int i = 0; i < bytesPerCycle / blockSize; i++) {
-                    file.read(reinterpret_cast<char*>(&iValue_16[i]), blockSize);
+                    file.read(reinterpret_cast<char*>(&iValue_2[i]), blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
+                    Value[i] = ValuetoString(iValue_2[i]);
+                    if (digit_mode == AUTO && max_digits < calc_digits(iValue_2[i])) max_digits = calc_digits(iValue_2[i]);
                 }
-                if (Print_Values(iValue_16) == ERROR_DISPLAY_SETTINGS) return ERROR_DISPLAY_SETTINGS;
+                if (digit_mode == AUTO) {
+                    digits = max_digits;
+                }
                 break;
             case 4:
                 for (int i = 0; i < bytesPerCycle / blockSize; i++) {
-                    file.read(reinterpret_cast<char*>(&iValue_32[i]), blockSize);
+                    file.read(reinterpret_cast<char*>(&iValue_4[i]), blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
+                    Value[i] = ValuetoString(iValue_4[i]);
+                    if (digit_mode == AUTO && max_digits < calc_digits(iValue_4[i])) max_digits = calc_digits(iValue_4[i]);
                 }
-                if (Print_Values(iValue_32) == ERROR_DISPLAY_SETTINGS) return ERROR_DISPLAY_SETTINGS;
+                if (digit_mode == AUTO) {
+                    digits = max_digits;
+                }
                 break;
             case 8:
                 for (int i = 0; i < bytesPerCycle / blockSize; i++) {
-                    file.read(reinterpret_cast<char*>(&iValue_64[i]), blockSize);
+                    file.read(reinterpret_cast<char*>(&iValue_8[i]), blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
+                    Value[i] = ValuetoString(iValue_8[i]);
+                    if (digit_mode == AUTO && max_digits < calc_digits(iValue_8[i])) max_digits = calc_digits(iValue_8[i]);
                 }
-                if (Print_Values(iValue_64) == ERROR_DISPLAY_SETTINGS) return ERROR_DISPLAY_SETTINGS;
+                if (digit_mode == AUTO) {
+                    digits = max_digits;
+                }
                 break;
         }
-        std::cout << std::endl;
+        file.close();
         return OK;
     }
-    return ERROR_OPEN_FILE;     // Happens only, when the File can't be opened...
-}                               // If it can be opened, it Returns "OK" and end the function
+    return ERROR_OPEN_FILE; // Happens only, when the File can't be opened...
+} // If it can be opened, it Returns "OK" and end the function
+
+/*************************** Print ***************************/
+
+Return_Value datei::print() {
+    // switch (blockSize) {
+    //     case 1:
+    //         Print_Values(iValue_1);
+    //         break;
+    //     case 2:
+    //         Print_Values(iValue_2);
+    //         break;
+    //     case 4:
+    //         Print_Values(iValue_4);
+    //         break;
+    //     case 8:
+    //         Print_Values(iValue_8);
+    //         break;
+    // }
+
+    Print_Values();
+    return OK;
+}
+
+/*************************** Write ***************************/
+
+Return_Value datei::write(const std::string &text) {
+    file.open(path, std::ios::binary | std::ios::out);
+    if (file.is_open()) {
+        file.write(text.c_str(), static_cast<int>(text.size()));
+        file.close();
+        return OK;
+    }
+    else return ERROR_OPEN_FILE;
+}
+
 
 /**************************** Init Table *****************************/
 
 void datei::init_Table() {
     apply_max_index_digits();
 
-    for (int i = 0; i < max_index_digits; i++) printf(" ");     // Empty Space in Row 0 line 0
-    printf(" %c ", 186);       // start of the index - column
+    for (int i = 0; i < index_digits; i++) printf(" "); // Empty Space in Row 0 line 0
+    printf(" %c ", 186); // start of the index - column
+
 
     for (int i = 0; i < columns; i++) {     // Do once for every column
 
-        int digits = getDigits(i);
+        int digits = calc_digits(i);
 
-        for (int j = 0; j < this->digits - digits; j++) printf("0");    // fill empty space with 0
-        printf("%d", i);    // print column lettering
-        printf(" | ");      // print spacer between columns
+        for (int j = 0; j < this->digits - digits; j++) printf("%c", placeholder); // fill empty space with 0
+        printf("%d", i); // print column lettering
+        printf(" | "); // print spacer between columns
     }
+    printf("\n"); // New line for dividing line
 
-    printf("\n");       // New line for dividing line
-
-    for (int i = 0; i < max_index_digits + 1; i++) printf("%c", 205);     // line Space in Row 0; line 1
-    printf("%c", 206);      // character to connect vertical and horizontal line
-    for (int i = 0; i < (digits + 3) * columns; i++) printf("%c", 205);     // horizontal dividing line
+    for (int i = 0; i < index_digits + 1; i++) printf("%c", 205); // line Space in Row 0; line 1
+    printf("%c", 206); // character to connect vertical and horizontal line
+    for (int i = 0; i < (digits + 3) * columns; i++) printf("%c", 205); // horizontal dividing line
 }
 
 /*************************** Print Values ****************************/
 
-template<class Typ>
-int datei::Print_Values(Typ *Value) {
-    for (int a = 0; a < bytesPerCycle / blockSize; a++) {       // amount of Values
-        if (a % columns == 0) {     // do NEW LINE and a new index number every "columns" lines
+Return_Value datei::Print_Values() {
+    std::cout << std::endl;
+
+    init_Table();
+    for (int a = 0; a < bytesPerCycle / blockSize; a++) {
+        // amount of Values
+        if (a % columns == 0) {
+            // do NEW LINE and a new index number every "columns" lines
             printf("\n");
-            for (int b = 0; b < max_index_digits - getDigits(a / columns); b++) {       // print 0 for every "not used" character, that is needed
-                printf("0");
+            for (int b = 0; b < index_digits - calc_digits(a / columns); b++) {
+                // print 0 for every "not used" character, that is needed
+                printf("%c", placeholder);
             }
-            printf("%d %c", a / columns, 186);      // print index and vertical dividing line
+            printf("%d %c", a / columns, 186); // print index and vertical dividing line
         }
 
         printf(" ");
-        for (int b = 0; b < digits - getDigits(Value[a]); b++) printf("0");
-        std::cout << static_cast<int>(Value[a]) << " |";
+
+        for (int b = 0; b < digits - Value[a].size(); b++) printf("%c", placeholder);
+        std::cout << Value[a] << " |";
     }
+    std::cout << "\n" << std::endl;
+    return OK;
+}
+
+Return_Value datei::Print_ASCII() const {
+    std::cout << std::endl;
+    for (int a = 0; a < bytesPerCycle / blockSize; a++) {       // amount of Values
+        switch (blockSize) {        // no default case -> blockSize already verified in setBlockSize()
+            case 1:
+                for (int b = 0; b < digits - calc_digits(iValue_1[a]); b++) printf("%c", placeholder);
+                printf("%c", iValue_1[a]);
+                break;
+            case 2:
+                for (int b = 0; b < digits - calc_digits(iValue_2[a]); b++) printf("%c", placeholder);
+                printf("%c", iValue_2[a]);
+                break;
+            case 4:
+                for (int b = 0; b < digits - calc_digits(iValue_4[a]); b++) printf("%c", placeholder);
+                printf("%c", iValue_4[a]);
+                break;
+            case 8:
+                for (int b = 0; b < digits - calc_digits(iValue_8[a]); b++) printf("%c", placeholder);
+                printf("%c", iValue_8[a]);
+                break;
+        }
+    }
+    std::cout << std::endl;
+    return OK;
+}
+
+Return_Value datei::getCSV() {
+    std::string path;
+
+    std::cout << "Path to store CSV: ";
+    std::getline(std::cin, path);
+    if (path.contains('\\')) {
+        for (char &i : path) {
+            if (i == '\\') i = '/';
+        }
+    }
+
+    if (std::filesystem::exists(path)) {
+        char yn;
+        std::cout << "Override \"" << path << "\" ?" << std::endl;
+        std::cin >> yn;
+        if (yn == 'y') {
+            file.open(path, std::ios::trunc | std::ios::out);
+        }
+        else {
+            path.replace(path.size() - 4, 4, "1.csv");
+            file.open(path, std::ios::out);
+        }
+    }
+    else {
+        file.open(path, std::ios::out);
+    }
+
+    std::cout << path << std::endl;
+
+    std::string string;
+    string += "; ";
+    for (int i = 0; i < columns; i++) { string += std::to_string(i) += ";"; }
+    for (int i = 0; i < bytesPerCycle / blockSize; i++) {
+        if (i % columns == 0) {
+            string += "\n";
+            string += std::to_string(i/8) += "; ";
+        }
+        string += Value[i];
+        string += "; ";
+    }
+
+    file<<string;
+    file.close();
+    std::cout << std::endl;
+
     return OK;
 }

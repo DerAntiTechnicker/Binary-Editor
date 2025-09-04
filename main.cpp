@@ -1,31 +1,99 @@
-/***************************************************
-* Author: Florian Schneck
- * created: 10.08.2025
- ***************************************************
- * Work to do:
- *              - redesign -> Print_column_index();
- *
- ***************************************************/
-
 #include "datei.h"
+#include "CommandLine.h"
+
+
+class chines {
+    int index;
+    std::string text;
+
+public:
+    chines() {
+        index = 2;
+        text = "Chines";
+    }
+};
+
 
 
 int main() {
-    // datei test ("C:/Users/Florian Schneck/ClionProjects/Binary_Editor/Test.bin");
     datei test;
+    CommandLine CLI;
 
-    test.setPath("C:/Users/Florian Schneck/ClionProjects/Binary_Editor/Test.bin");
-    PrintError(test.setBlockSize(4));
-    PrintError(test.setBytesPerCycle(420));
-    PrintError(test.setColumns(8));
-    PrintError(test.setDigits(4));
-    PrintError(test.read());
+    CLI.addCommand("settings",[&CLI, &test] {
+        if (CLI.getArg(1) == "show") {
+            std::cout << "Path: \"" << test.getPath() << "\"" << std::endl;
+            std::cout << "BlockSize: " << test.getBlockSize() << std::endl;
+            std::cout << "BytesPerCycle: " << test.getBytesPerCycle() << std::endl;
+            std::cout << "Columns: " << test.getColumns() << std::endl;
+            std::cout << "Digit Mode: " << test.getDigitMode() << std::endl;
+            std::cout << "Digits: " << test.getDigits() << std::endl;
+            std::cout << "Placeholder: \"" << test.getPlaceholder() << "\"" << std::endl;
+            std::cout << "readPos: " << test.getReadPos() << std::endl;
+        }
+        else if (CLI.getArg(1) == "set") {
+            int ArgValue = 0;
+            if (CLI.getArg(2) == "Path") {
+                const std::string buffer = CLI.getArg(3);
+                Print_Return(test.setPath(buffer));
+            }
+            else if (CLI.getArg(2) == "BlockSize") {
+                ArgValue = CLI.getArgValue(3);
+                Print_Return(test.setBlockSize(ArgValue));
+            }
+            else if (CLI.getArg(2) == "BytesPerCycle") {
+                ArgValue = CLI.getArgValue(3);
+                Print_Return(test.setBytesPerCycle(ArgValue));
+            }
+            else if (CLI.getArg(2) == "Columns") {
+                ArgValue = CLI.getArgValue(3);
+                Print_Return(test.setColumns(ArgValue));
+            }
+            else if (CLI.getArg(2) == "Digits") {
+                ArgValue = CLI.getArgValue(3);
+                Print_Return(test.setDigits(ArgValue));
+            }
+            else if (CLI.getArg(2) == "Ph") {
+                const std::string a = CLI.getArg(3);
+                Print_Return(test.setPlaceholder(a[0]));
+            }
+            else if (CLI.getArg(2) == "readPos") {
+                ArgValue = CLI.getArgValue(3);
+                Print_Return(test.setReadPos(ArgValue));
+            }
+            else std::cout << "Argument does not exits!" << std::endl;
+        }
+        else std::cout << "Argument does not exits!" << std::endl;
+    });
+
+    CLI.addCommand("read",[&test] {
+        test.read();
+    });
+
+    CLI.addCommand("print",[&test] {
+        test.print();
+    });
+
+    CLI.addCommand("write",[&test] {
+        Print_Return(test.write("Servus"));
+    });
+
+    CLI.addCommand("print_ASCII", [&test] {
+        Print_Return(test.Print_ASCII());
+    });
+
+    CLI.addCommand("CSV", [&test] {
+        Print_Return(test.getCSV());
+    });
+
+    test.setPath("C:/Users/Florian Schneck/CLionProjects/Binary-Editor/TEST.bin");
+    test.setDigits(-1);
+    test.setColumns(8);
+    test.setBytesPerCycle(32);
+    test.setBlockSize(1);
+    test.setPlaceholder(' ');
 
 
-    /*std::fstream file("C:/Users/Florian Schneck/ClionProjects/Binary_Editor/Test.bin", std::ios::out | std::ios::trunc | std::ios::binary);
-    int text[1000];
-    for (int i = 0; i < 50; i++) text[i] = 24;
-    for (int i = 50; i < 100; i++) text[i] = 1024;
-    file.write(reinterpret_cast<char*>(text), sizeof(int) * 100);*/
+    CLI.init();
+
     return 0;
 }
