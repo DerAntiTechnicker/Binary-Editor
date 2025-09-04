@@ -25,6 +25,7 @@ int main() {
             std::cout << "BlockSize: " << test.getBlockSize() << std::endl;
             std::cout << "BytesPerCycle: " << test.getBytesPerCycle() << std::endl;
             std::cout << "Columns: " << test.getColumns() << std::endl;
+            std::cout << "Digit Mode: " << test.getDigitMode() << std::endl;
             std::cout << "Digits: " << test.getDigits() << std::endl;
             std::cout << "Placeholder: \"" << test.getPlaceholder() << "\"" << std::endl;
             std::cout << "readPos: " << test.getReadPos() << std::endl;
@@ -78,6 +79,10 @@ int main() {
 
     CLI.addCommand("print_ASCII", [&test] {
         Print_Return(test.Print_ASCII());
+    });
+
+    CLI.addCommand("CSV", [&test] {
+        Print_Return(test.getCSV());
     });
 
     test.setPath("C:/Users/Florian Schneck/CLionProjects/Binary-Editor/TEST.bin");

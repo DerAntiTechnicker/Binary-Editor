@@ -17,7 +17,7 @@
 
 /******************************************************/
 
-enum Error_Codes{      // Return Codes...
+enum Return_Value {      // Return Codes...
     OK,
     ERROR,
     ERROR_WORKING_BYTES,
@@ -25,7 +25,15 @@ enum Error_Codes{      // Return Codes...
     ERROR_DISPLAY_SETTINGS
 };
 
+enum mode {
+    MANUAL,
+    AUTO
+};
+
 void Print_Return(int ReturnValue);       // Print Error Information from recieved return code to console
+
+template<class Typ>
+std::string ValuetoString(const Typ &Value);
 
 /************************************/
 
@@ -40,12 +48,14 @@ public:     // file - related variables
     __int32 *iValue_4;     // Variable to store 4 Byte Values
     __int64 *iValue_8;     // Variable to store 8 Byte Values
 
+
     int blockSize;      // Size of a read Value [Bytes]
     int bytesPerCycle;      // How many Bytes are extracted [Bytes]
 
     int index_digits;
 
     int digits;    // The digits per Value to be displayed -> digitsPerNumber = 3 -> "2" is displayed as "002"
+    mode digit_mode;
     int columns;         // The number of columns to be displayed when reading from a file
     char placeholder;       // placeholder for not used characters (f.ex.: 001)
 
@@ -60,6 +70,7 @@ public:
         bytesPerCycle = DEFAULT_BYTES_PER_CYCLE;
         columns = DEFAULT_COLUMNS;
         digits = DEFAULT_DIGITS;
+        digit_mode = AUTO;
         ReadPos = 0;
         check_settings();   // called, because it also calculates the max. Index digits...
     }
@@ -72,24 +83,27 @@ public:
         file.close();       // Close File in case it is still open
     }
 
-    int read();     // Read from a File
-    int print();    // prints the Values to the Console
-    int write(const std::string &text);
-    int Print_ASCII() const;
+    Return_Value read();     // Read from a File
+    Return_Value print();    // prints the Values to the Console
+    Return_Value write(const std::string &text);
+    Return_Value Print_ASCII() const;
+
+    Return_Value getCSV();
 
     bool setPath(std::string path);      // update the Path
-    int setBlockSize(const int &blockSize);
-    int setBytesPerCycle(const int &bytesPerCycle);
-    int setColumns(const int &columns);
-    int setDigits(const int &digits);
-    int setPlaceholder(const char &placeholder);
-    int setReadPos(const int &ReadPos);
+    Return_Value setBlockSize(const int &blockSize);
+    Return_Value setBytesPerCycle(const int &bytesPerCycle);
+    Return_Value setColumns(const int &columns);
+    Return_Value setDigits(const int &digits);
+    Return_Value setPlaceholder(const char &placeholder);
+    Return_Value setReadPos(const int &ReadPos);
 
     std::string getPath() const;        // return the current
     int getBlockSize() const;
     int getBytesPerCycle() const;
     int getColumns() const;
     int getDigits() const;
+    std::string getDigitMode() const;
     char getPlaceholder() const;
     int getReadPos() const;
 
@@ -98,7 +112,7 @@ public:
 
 // private:    // Internal Functions
 private:
-    int file_status();    // returns TRUE if a file can be opened, if not: FALSE
+    Return_Value file_status();    // returns TRUE if a file can be opened, if not: FALSE
     void set_null_ptr();    // sets every pointer (iValue_8, ...) to nullptr
     void apply_Byte_Settings();     // resize the Arrays where to store the Values
 
@@ -110,7 +124,7 @@ private:
     void init_Table();
 
     template<class Typ>
-    int Print_Values(Typ &Value);
+    Return_Value Print_Values(Typ &Value);
 };
 
 #endif //FILE_H

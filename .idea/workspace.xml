@@ -30,14 +30,8 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="965deeb9-15b7-4abd-b953-883148e61f54" name="Changes" comment="CLI">
-      <change afterPath="$PROJECT_DIR$/iValue.cpp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/iValue.h" afterDir="false" />
+    <list default="true" id="965deeb9-15b7-4abd-b953-883148e61f54" name="Changes" comment="write">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CommandLine.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/CommandLine.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CommandLine.h" beforeDir="false" afterPath="$PROJECT_DIR$/CommandLine.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TEST.bin" beforeDir="false" afterPath="$PROJECT_DIR$/TEST.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/datei.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/datei.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/datei.h" beforeDir="false" afterPath="$PROJECT_DIR$/datei.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
@@ -116,11 +110,6 @@
   }
 }</component>
   <component name="RunManager">
-    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
-      <method v="2">
-        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="Binary_Editor" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="Binary_Editor.exe" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="true" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Binary_Editor" TARGET_NAME="Binary_Editor" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Binary_Editor" RUN_TARGET_NAME="Binary_Editor">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -148,7 +137,8 @@
       <workItem from="1756274626748" duration="24779000" />
       <workItem from="1756456386573" duration="133000" />
       <workItem from="1756456544385" duration="338000" />
-      <workItem from="1756456900971" duration="2679000" />
+      <workItem from="1756456900971" duration="7087000" />
+      <workItem from="1756796052488" duration="116000" />
     </task>
     <task id="LOCAL-00001" summary="Add Class &quot;datei&quot;">
       <option name="closed" value="true" />
@@ -174,7 +164,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756379375500</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="write">
+      <option name="closed" value="true" />
+      <created>1756459854573</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1756459854573</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -207,7 +205,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="origin/Test_CLion" />
+                        <option value="Test_CLion" />
                       </list>
                     </value>
                   </entry>
@@ -223,7 +221,8 @@
     <MESSAGE value="Add Class &quot;datei&quot;" />
     <MESSAGE value="Removed Class &quot;CommandLine&quot; -&gt; currently writing own library:&#10;https://github.com/DerAntiTechnicker/Command-Line" />
     <MESSAGE value="CLI" />
-    <option name="LAST_COMMIT_MESSAGE" value="CLI" />
+    <MESSAGE value="write" />
+    <option name="LAST_COMMIT_MESSAGE" value="write" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

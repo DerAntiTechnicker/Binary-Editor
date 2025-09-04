@@ -24,15 +24,23 @@ void Print_Return(const int ReturnValue) {
 }
 
 /*********************************************************************/
+
+template<class Typ>
+std::string ValuetoString(const Typ &Value) {
+    return std::to_string(Value);
+}
+
+/*********************************************************************/
 /**************** Check if File can be opened ****************/
 
-int datei::file_status() {
+Return_Value datei::file_status() {
     file.open(path, std::ios::in | std::ios::binary);
 
     if (file.is_open()) {
         file.close();
         return OK;
-    } else {
+    }
+    else {      // else not necessary, because of return OK;
         file.close();
         return ERROR_OPEN_FILE;
     }
@@ -88,8 +96,8 @@ bool datei::check_settings() {
 
 bool datei::setPath(std::string path) {
     if (path.contains('\\')) {
-        for (int i = 0; i < path.size(); i++) {
-            if (path[i] == '\\') path[i] = '/';
+        for (char & i : path) {
+            if (i == '\\') i = '/';
         }
     }
     this->path = path;
@@ -98,7 +106,7 @@ bool datei::setPath(std::string path) {
 
 /********** set BlockSize **********/
 
-int datei::setBlockSize(const int &blockSize) {
+Return_Value datei::setBlockSize(const int &blockSize) {
     switch (this->blockSize) {
         // delete old Array
         default: // when not 1, 2, 4, 8
@@ -130,7 +138,7 @@ int datei::setBlockSize(const int &blockSize) {
 
 /********** set BytesPerCycle **********/
 
-int datei::setBytesPerCycle(const int &bytesPerCycle) {
+Return_Value datei::setBytesPerCycle(const int &bytesPerCycle) {
     if (bytesPerCycle < blockSize) return ERROR_WORKING_BYTES; // Check bytesPerCycle
 
     this->bytesPerCycle = bytesPerCycle;
@@ -141,7 +149,7 @@ int datei::setBytesPerCycle(const int &bytesPerCycle) {
 
 /********** set Columns **********/
 
-int datei::setColumns(const int &columns) {
+Return_Value datei::setColumns(const int &columns) {
     int buffer = 0;
 
     if (columns < 1) return ERROR_DISPLAY_SETTINGS; // Check Columns
@@ -159,17 +167,16 @@ int datei::setColumns(const int &columns) {
 
 /********** set Digits **********/
 
-int datei::setDigits(const int &digits) {
+Return_Value datei::setDigits(const int &digits) {
     if (digits == -1) {     // when Digits = -1 -> Digits are calculated in read()
-        this->digits = -1;
+        digit_mode = AUTO;
         std::cout << "Auto set Digits - enabled" << std::endl;
         return OK;
     }
-
     if (calc_digits(columns) > digits) return ERROR_DISPLAY_SETTINGS; // Check max. column lettering Digits
 
-    this->index_digits = calc_digits((bytesPerCycle / blockSize) / columns);
-    // safe the calculated max. Index digits to the class
+    this->index_digits = calc_digits((bytesPerCycle / blockSize) / columns);        // safe the calculated max. Index digits to the class
+    this->digit_mode = MANUAL;
     this->digits = digits;
 
     return OK;
@@ -177,14 +184,14 @@ int datei::setDigits(const int &digits) {
 
 /******* set Placeholder ********/
 
-int datei::setPlaceholder(const char &placeholder) {
+Return_Value datei::setPlaceholder(const char &placeholder) {
     this->placeholder = placeholder;
     return OK;
 }
 
 /********* set ReadPos **********/
 
-int datei::setReadPos(const int &ReadPos) {
+Return_Value datei::setReadPos(const int &ReadPos) {
     if (ReadPos < 0) return ERROR;
     this->ReadPos = ReadPos;
     return OK;
@@ -224,6 +231,17 @@ int datei::getDigits() const {
     return digits;
 }
 
+/******** get DigitMode *********/
+
+std::string datei::getDigitMode() const {
+    switch (digit_mode) {
+        case MANUAL:
+            return "MANUAL";
+        case AUTO:
+            return "AUTO";
+    }
+}
+
 /******* get Placeholder ********/
 
 char datei::getPlaceholder() const {
@@ -235,7 +253,6 @@ char datei::getPlaceholder() const {
 int datei::getReadPos() const {
     return ReadPos;
 }
-
 
 
 /***************************************************************************/
@@ -296,7 +313,7 @@ void datei::apply_max_index_digits() {
 
 /*************************** Read ****************************/
 
-int datei::read() {
+Return_Value datei::read() {
     file.open(path, std::ios::in | std::ios::binary);
     file.seekg(ReadPos, std::ios::beg);        // read from Byte "fromByte"
 
@@ -310,50 +327,40 @@ int datei::read() {
             case 1:
                 for (int i = 0; i < bytesPerCycle / blockSize; i++) {
                     file.read(&iValue_1[i], blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
-                    if (digits == -1 && max_digits < calc_digits(iValue_1[i])) max_digits = calc_digits(iValue_1[i]);
+                    if (digit_mode == AUTO && max_digits < calc_digits(iValue_1[i])) max_digits = calc_digits(iValue_1[i]);
                 }
-                if (digits == -1) {
+                if (digit_mode == AUTO) {
                     digits = max_digits;
                 }
                 break;
             case 2:
                 for (int i = 0; i < bytesPerCycle / blockSize; i++) {
                     file.read(reinterpret_cast<char*>(&iValue_2[i]), blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
-                    if (digits == -1 && max_digits < calc_digits(iValue_2[i])) max_digits = calc_digits(iValue_2[i]);
+                    if (digit_mode == AUTO && max_digits < calc_digits(iValue_2[i])) max_digits = calc_digits(iValue_2[i]);
                 }
-                if (digits == -1) {
+                if (digit_mode == AUTO) {
                     digits = max_digits;
-                    Print_Values(iValue_2);
-                    digits = -1;
                 }
-                else Print_Values(iValue_2);
                 break;
             case 4:
                 for (int i = 0; i < bytesPerCycle / blockSize; i++) {
                     file.read(reinterpret_cast<char*>(&iValue_4[i]), blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
-                    if (digits == -1 && max_digits < calc_digits(iValue_4[i])) max_digits = calc_digits(iValue_4[i]);
+                    if (digit_mode == AUTO && max_digits < calc_digits(iValue_4[i])) max_digits = calc_digits(iValue_4[i]);
                 }
-                if (digits == -1) {
+                if (digit_mode == AUTO) {
                     digits = max_digits;
-                    Print_Values(iValue_2);
-                    digits = -1;
                 }
-                else Print_Values(iValue_2);
                 break;
             case 8:
                 for (int i = 0; i < bytesPerCycle / blockSize; i++) {
                     file.read(reinterpret_cast<char*>(&iValue_8[i]), blockSize);     // no reinterpret_cast needed, because iValue_8 -> 1Byte like char
-                    if (digits == -1 && max_digits < calc_digits(iValue_4[i])) max_digits = calc_digits(iValue_4[i]);
+                    if (digit_mode == AUTO && max_digits < calc_digits(iValue_8[i])) max_digits = calc_digits(iValue_8[i]);
                 }
-                if (digits == -1) {
+                if (digit_mode == AUTO) {
                     digits = max_digits;
-                    Print_Values(iValue_2);
                 }
-                else Print_Values(iValue_2);
                 break;
         }
-        file.close();
-        std::cout << std::endl;
         file.close();
         return OK;
     }
@@ -362,11 +369,19 @@ int datei::read() {
 
 /*************************** Print ***************************/
 
-int datei::print() {
+Return_Value datei::print() {
     switch (blockSize) {
         case 1:
             Print_Values(iValue_1);
-            digits = -1;
+            break;
+        case 2:
+            Print_Values(iValue_2);
+            break;
+        case 4:
+            Print_Values(iValue_4);
+            break;
+        case 8:
+            Print_Values(iValue_8);
             break;
     }
     return OK;
@@ -374,7 +389,7 @@ int datei::print() {
 
 /*************************** Write ***************************/
 
-int datei::write(const std::string &text) {
+Return_Value datei::write(const std::string &text) {
     file.open(path, std::ios::binary | std::ios::out);
     if (file.is_open()) {
         file.write(text.c_str(), static_cast<int>(text.size()));
@@ -413,7 +428,7 @@ void datei::init_Table() {
 /*************************** Print Values ****************************/
 
 template<class Typ>
-int datei::Print_Values(Typ &Value) {
+Return_Value datei::Print_Values(Typ &Value) {
     std::cout << std::endl;
 
     init_Table();
@@ -451,11 +466,11 @@ int datei::Print_Values(Typ &Value) {
                 break;
         }
     }
-    std::cout << std::endl;
+    std::cout << "\n" << std::endl;
     return OK;
 }
 
-int datei::Print_ASCII() const {
+Return_Value datei::Print_ASCII() const {
     std::cout << std::endl;
     for (int a = 0; a < bytesPerCycle / blockSize; a++) {       // amount of Values
         switch (blockSize) {        // no default case -> blockSize already verified in setBlockSize()
@@ -479,4 +494,18 @@ int datei::Print_ASCII() const {
     }
     std::cout << std::endl;
     return OK;
+}
+
+Return_Value datei::getCSV() {
+    int pos = static_cast<int>(path.size()) - 4;
+    std::string path = this->path;
+    path.replace(pos, 4, ".csv");
+    std::cout << path << std::endl;
+    file.open(path, std::ios::out);
+
+    std::string string;
+
+
+    file<<string;
+    file.close();
 }
